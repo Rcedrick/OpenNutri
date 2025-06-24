@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:open_nutri/pages/authentification/register_page.dart';
+
+import '../../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -12,33 +15,32 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _obscureText = true;
+  String errorMessage = '';
 
-  void singUserIn() async {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  void _toggleVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
-    print("Email: $email");
-    print("Password: $password");
-    if (email.isEmpty || password.isEmpty) {
-      print("Champs vides");
-      return;
-    }
-
+  void singIn() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+      await authService.value.signIn(
+        email: emailController.text,
+        password: passwordController.text,
       );
+      popPage();
     } on FirebaseAuthException catch (e) {
-      print("e.code = ${e.code}");
-      if (e.code == 'user-not-found') {
-        print("Utilisateur non trouvé");
-      } else if (e.code == 'wrong-password') {
-        print("mot de passe incorrect");
-      }
+      setState(() {
+        errorMessage= e.message ?? "This is not working";
+      });
     }
   }
 
+  void popPage(){
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +54,14 @@ class _LoginPageState extends State<LoginPage> {
             end: Alignment.bottomRight,
           ),
         ),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text("Hello\nSign in!",
                 style: TextStyle(fontSize: 32, color: Colors.white)),
             SizedBox(height: 30),
-            TextField(
+            TextFormField(
               controller: emailController,
               decoration: InputDecoration(
                 hintText: "Gmail",
@@ -69,18 +72,34 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(height: 20),
-
-            TextField(
+            TextFormField(
               controller: passwordController,
-              obscureText: true,
+              validator: (String? value) {
+                if (value == null || value.isEmpty) {
+                  return 'Veuillez entrer un mot de passe';
+                } else if (value.length < 6) {
+                  return 'Le mot de passe doit contenir au moins 6 caractères';
+                }
+                return null;
+              },obscureText: _obscureText,
               decoration: InputDecoration(
                 hintText: "Password",
-                suffixIcon: Icon(Icons.visibility_off),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: _toggleVisibility,
+                ),
               ),
+            ),
+            Text(
+              errorMessage,
+              style: TextStyle(color: Colors.redAccent),
             ),
             Align(
               alignment: Alignment.centerRight,
@@ -90,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: () => singUserIn(),
+              onPressed: () => singIn(),
               style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 80, vertical: 14),
                   shape: StadiumBorder(),
@@ -101,7 +120,12 @@ class _LoginPageState extends State<LoginPage> {
             Text("Don’t have account?",
                 style: TextStyle(color: Colors.white70)),
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+              Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => RegisterPage()),
+              );
+              },
               child: Text("Sign up", style: TextStyle(color: Colors.white)),
             ),
           ],

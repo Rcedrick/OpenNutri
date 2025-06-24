@@ -7,11 +7,14 @@ import 'scanner_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
   final _controller = ProductController();
   final _searchController = TextEditingController();
   Product? _product;
@@ -51,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,8 +64,8 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         actions: [
           IconButton(onPressed: singUserOut,
-          icon: Icon(Icons.logout),
-        )],
+            icon: Icon(Icons.logout),
+          )],
       ),
       body: Container(
         decoration: BoxDecoration(
