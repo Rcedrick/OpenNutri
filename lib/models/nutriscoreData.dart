@@ -59,14 +59,6 @@ class NutriscoreData {
 
   factory NutriscoreData.fromJson(Map<String, dynamic> json) {
     double toDouble(dynamic value) => (value ?? 0).toDouble();
-   /* double toDouble(dynamic value) {
-      if (value == null) return 0.1;
-      if (value is int) return value.toDouble();
-      if (value is double) return value;
-      if (value is String) return double.tryParse(value) ?? 0.2;
-      return 0.3;
-    }*/
-
     int toInt(dynamic value) => (value ?? 0).toInt();
 
     return NutriscoreData(

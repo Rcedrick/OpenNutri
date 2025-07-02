@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:open_nutri/pages/authentification/signin_page.dart';
 import '../controllers/product_controller.dart';
 import '../models/product.dart';
 import 'product_detail_page.dart';
@@ -44,6 +45,12 @@ class _HomePageState extends State<HomePage> {
 
   void singUserOut(){
     FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInPage(),
+      ),
+    );
   }
 
   void _searchProduct() async {
@@ -63,14 +70,15 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(onPressed: singUserOut,
+          IconButton(
+            onPressed: singUserOut,
             icon: Icon(Icons.logout),
           )],
       ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.red.shade700, Colors.purple.shade900],
+            colors: [Colors.white, Colors.purple.shade900],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

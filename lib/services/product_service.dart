@@ -33,7 +33,7 @@ class ProductService {
 
       return products
           .map((item) => Product.fromJson(item))
-          .where((product) => product.imageUrl.isNotEmpty) // filtre les produits valides
+          .where((product) => product.imageUrl.isNotEmpty)
           .toList();
     } else {
       throw Exception('Échec de la recherche');

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:open_nutri/pages/authentification/register_page.dart';
-import 'login_page.dart';
+import 'package:open_nutri/pages/authentification/signin_page.dart';
+import 'package:open_nutri/pages/authentification/signup_page.dart';
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +30,7 @@ class WelcomePage extends StatelessWidget {
               SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => LoginPage())),
+                    MaterialPageRoute(builder: (_) => SignInPage())),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     side: BorderSide(color: Colors.white),
@@ -39,7 +41,7 @@ class WelcomePage extends StatelessWidget {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => RegisterPage())),
+                    MaterialPageRoute(builder: (_) => SignUpPage())),
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     shape: StadiumBorder(),

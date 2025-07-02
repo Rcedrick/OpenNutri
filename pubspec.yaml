@@ -32,14 +32,18 @@ dependencies:
     sdk: flutter
   flutter_svg: ^2.2.0
   date_field: ^3.0.2
-  firebase_core: ^2.4.0
+#  firebase_core: ^2.4.0
+  firebase_core: ^2.32.0
+
   cloud_firestore: ^4.13.2
   http: ^1.2.0
   mobile_scanner: ^3.5.2
   permission_handler: ^11.3.0
-  firebase_auth: ^4.2.0
+#  firebase_auth: ^4.2.0
+  firebase_auth: ^4.19.3
   google_sign_in: ^6.1.6
-#  fluttertoast: ^8.2.4
+  #  supabase_flutter: ^1.10.14
+  salomon_bottom_bar: ^3.3.2
 
 
   # The following adds the Cupertino Icons font to your application.
