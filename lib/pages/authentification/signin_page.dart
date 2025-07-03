@@ -2,8 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:open_nutri/pages/authentification/signup_page.dart';
 
+import '../../main.dart';
 import '../../services/auth_service.dart';
 import '../home_page.dart';
+import '../info_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -34,19 +36,19 @@ class _SignInPageState extends State<SignInPage> {
         );
 
         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomePage(),
-        ),
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainNavigation(),
+          ),
         );
       } on FirebaseAuthException catch (e) {
         FocusScope.of(context).requestFocus(FocusNode());
-        String message = 'An error occurred: ${e.code}';
+        String message = 'Une erreur est survenue : ${e.code}';
 
-        if (e.code == 'user-not-found') {
-        message = 'Email non trouvé';
+        if (e.code == 'network-request-failed') {
+          message = 'Vérifiez votre connection internet';
         } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
-        message = 'Votre mot de passe ou votre email est incorrect';
+          message = 'Votre mot de passe ou votre email est incorrect';
         }
         scaffoldMessenger.showSnackBar(
         SnackBar(content: Text(message)),

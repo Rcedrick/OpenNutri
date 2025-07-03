@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:open_nutri/pages/authentification/signin_page.dart';
 
+import '../../main.dart';
 import '../../services/auth_service.dart';
 import '../home_page.dart';
 
@@ -38,7 +39,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const MainNavigation()),
         );
       } on FirebaseAuthException catch (e) {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -46,8 +47,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
         if (e.code == 'email-already-in-use') {
           message = 'Cet email est déjà utilisé';
-        } else if (e.code == 'invalid-email') {
-          message = 'L\'email n\'est pas valide';
+        } else if (e.code == 'network-request-failed') {
+          message = 'Vérifiez votre connection internet';
         }
 
         scaffoldMessenger.showSnackBar(

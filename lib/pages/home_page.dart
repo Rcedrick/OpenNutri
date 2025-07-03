@@ -65,16 +65,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Scan et recherhe de produit par code-barres"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: singUserOut,
-            icon: Icon(Icons.logout),
-          )],
-      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

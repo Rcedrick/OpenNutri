@@ -28,15 +28,11 @@ class _ScannerPageState extends State<ScannerPage> {
         actions: [
           IconButton(
             icon: Icon(Icons.cameraswitch),
-            onPressed: () {
-              controller.switchCamera();
-            },
+            onPressed: () => controller.switchCamera(),
           ),
           IconButton(
             icon: Icon(Icons.flash_on),
-            onPressed: () {
-              controller.toggleTorch();
-            },
+            onPressed: () => controller.toggleTorch(),
           ),
         ],
       ),
@@ -59,18 +55,50 @@ class _ScannerPageState extends State<ScannerPage> {
               }
             },
           ),
+
+          // Cadre personnalisé
           Center(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
+            child: CustomPaint(
+              size: Size(300, 300),
+              painter: ScanFramePainter(),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class ScanFramePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+
+    final double cornerLength = 30;
+    final double w = size.width;
+    final double h = size.height;
+
+    // Coins ouverts
+    // Haut gauche
+    canvas.drawLine(Offset(0, 0), Offset(cornerLength, 0), paint);
+    canvas.drawLine(Offset(0, 0), Offset(0, cornerLength), paint);
+
+    // Haut droit
+    canvas.drawLine(Offset(w, 0), Offset(w - cornerLength, 0), paint);
+    canvas.drawLine(Offset(w, 0), Offset(w, cornerLength), paint);
+
+    // Bas gauche
+    canvas.drawLine(Offset(0, h), Offset(cornerLength, h), paint);
+    canvas.drawLine(Offset(0, h), Offset(0, h - cornerLength), paint);
+
+    // Bas droit
+    canvas.drawLine(Offset(w, h), Offset(w - cornerLength, h), paint);
+    canvas.drawLine(Offset(w, h), Offset(w, h - cornerLength), paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
