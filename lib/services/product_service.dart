@@ -10,34 +10,41 @@ class ProductService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       if (data['product'] != null) {
-        return Product.fromJson(data['product']);
+        final product = Product.fromJson(data['product']);
+        return product;
       }
     }
     return null;
   }
 
-  static Future<List<Product>> fetchProductByName(String name) async {
-    final url = Uri.parse(
-      'https://world.openfoodfacts.org/cgi/search.pl'
-          '?search_terms=$name'
-          '&search_simple=1'
-          '&action=process'
-          '&json=1',
-    );
+  static Future<List<Product>> fetchProducts(String search) async {
+    final url =
+        'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$search&search_simple=1&action=process&json=1';
 
-    final response = await http.get(url);
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final products = data['products'] as List;
+      final jsonData = json.decode(response.body);
+      final List productsJson = jsonData['products'];
 
-      return products
-          .map((item) => Product.fromJson(item))
-          .where((product) => product.imageUrl.isNotEmpty)
-          .toList();
+      return productsJson.map((p) => Product.fromJson(p)).toList();
     } else {
-      throw Exception('Échec de la recherche');
+      throw Exception('Erreur lors du chargement des produits');
     }
   }
 
+  static Future<List<Product>> fetchProductsByName(String name) async {
+    final url =
+        'https://world.openfoodfacts.org/cgi/search.pl?search_terms=$name&search_simple=1&action=process&json=1';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      final List productsJson = jsonData['products'];
+
+      return productsJson.map((e) => Product.fromJson(e)).toList();
+    } else {
+      throw Exception('Erreur lors de la récupération des produits');
+    }
+  }
 }

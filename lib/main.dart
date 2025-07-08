@@ -1,19 +1,16 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:open_nutri/pages/info_page.dart';
-import 'package:open_nutri/pages/product_detail_page.dart';
-import 'package:open_nutri/pages/scanner_page.dart';
-import 'package:open_nutri/services/product_service.dart';
+import 'package:open_nutri/pages/home_page.dart';
+import 'package:open_nutri/pages/like_page.dart';
+import 'package:open_nutri/pages/scan_page.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import 'package:open_nutri/pages/authentification/signin_page.dart';
-import 'package:open_nutri/pages/home_page.dart';
-import 'package:open_nutri/pages/authentification/welcome_page.dart';
 import 'package:open_nutri/pages/history_page.dart';
 
 import 'firebase_options.dart';
-import 'models/product.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +37,8 @@ class MyApp extends StatelessWidget {
 class AuthGate extends StatelessWidget {
 
   const AuthGate({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,49 +70,38 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  final List<Product> _history = [];
-
   void setCurrentIndex(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
 
-  Future<void> _handleScan(String code) async {
-    final product = await ProductService.fetchProductByCode(code);
-
-    if (product != null) {
-      setState(() {
-        _history.insert(0, product);
-      });
-
-      if (context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ProductDetailPage(product: product),
-          ),
-        );
-      }
-    } else {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Produit non trouvé")),
-        );
-      }
-    }
+  void signUserOut() {
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SignInPage(),
+      ),
+    );
   }
+
+
 
   final List<String> _titles = const [
     "Open Nutri",
     "Scan",
+    "Favoris",
+    "Historique",
   ];
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      InfoPage(),
       HomePage(),
+      ScanPage(),
+      LikePage(),
+      HistoryPage(),
     ];
 
     return Scaffold(
@@ -138,8 +126,7 @@ class _MainNavigationState extends State<MainNavigation> {
         ),
         actions: [
           TextButton.icon(
-            onPressed: () => FirebaseAuth.instance.signOut(),
-
+            onPressed: signUserOut,
             icon: const Icon(Icons.logout, color: Colors.white, size: 20),
             label: const Text(
               "Déconnexion",
@@ -166,6 +153,16 @@ class _MainNavigationState extends State<MainNavigation> {
           SalomonBottomBarItem(
             icon: const Icon(Icons.qr_code_scanner),
             title: const Text("Scan"),
+            selectedColor: Colors.purple.shade700,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.favorite),
+            title: const Text("Favoris"),
+            selectedColor: Colors.purple.shade700,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.history),
+            title: const Text("Historique"),
             selectedColor: Colors.purple.shade700,
           ),
         ],

@@ -56,7 +56,6 @@ class _ScannerPageState extends State<ScannerPage> {
             },
           ),
 
-          // Cadre personnalisé
           Center(
             child: CustomPaint(
               size: Size(300, 300),

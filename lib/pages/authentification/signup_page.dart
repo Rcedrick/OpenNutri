@@ -4,7 +4,8 @@ import 'package:open_nutri/pages/authentification/signin_page.dart';
 
 import '../../main.dart';
 import '../../services/auth_service.dart';
-import '../home_page.dart';
+import '../../utils/customise_utils.dart';
+import '../scan_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -22,7 +23,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> signUp() async {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -33,9 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
           password: passwordController.text.trim(),
         );
 
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text("Inscription terminée")),
-        );
+        showCustomSnackBar(context, "Inscription terminée");
 
         Navigator.pushReplacement(
           context,
@@ -50,10 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
         } else if (e.code == 'network-request-failed') {
           message = 'Vérifiez votre connection internet';
         }
-
-        scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        showCustomSnackBar(context, message);
       }
     }
   }
@@ -74,11 +69,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/logo.jpg',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                    ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     _gap(),
                     Padding(
@@ -126,7 +123,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         if (value == null || value.isEmpty) {
                           return 'Le champ est vide';
                         }
-
                         if (value.length < 6) {
                           return ' Votre mot de passe doit au moins 6 caractères';
                         }
@@ -190,7 +186,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           child: const Text(
                             "Se connecter",
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Colors.deepPurpleAccent,
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline,
                             ),

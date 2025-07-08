@@ -4,8 +4,9 @@ import 'package:open_nutri/pages/authentification/signup_page.dart';
 
 import '../../main.dart';
 import '../../services/auth_service.dart';
+import '../../utils/customise_utils.dart';
+import '../scan_page.dart';
 import '../home_page.dart';
-import '../info_page.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -31,10 +32,7 @@ class _SignInPageState extends State<SignInPage> {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
         );
-        scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text("Connection réussie"))
-        );
-
+        showCustomSnackBar(context, "Connection réussie.");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -50,9 +48,7 @@ class _SignInPageState extends State<SignInPage> {
         } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
           message = 'Votre mot de passe ou votre email est incorrect';
         }
-        scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(message)),
-        );
+        showCustomSnackBar(context, message);
       }
     }
   }
@@ -73,11 +69,13 @@ class _SignInPageState extends State<SignInPage> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/logo.jpg',
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
+                    ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     _gap(),
                     Padding(
@@ -99,18 +97,15 @@ class _SignInPageState extends State<SignInPage> {
                     TextFormField(
                       controller: emailController,
                       validator: (value) {
-                        // add email validation
                         if (value == null || value.isEmpty) {
                           return 'Le champ est vide';
                         }
-
                         bool emailValid = RegExp(
                           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
                         ).hasMatch(value);
                         if (!emailValid) {
                           return 'Votre email est incorrect';
                         }
-
                         return null;
                       },
                       decoration: const InputDecoration(
@@ -184,7 +179,7 @@ class _SignInPageState extends State<SignInPage> {
                           child: const Text(
                             "S\'inscrire",
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Colors.deepPurpleAccent,
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline,
                             ),
@@ -224,6 +219,5 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
-
   Widget _gap() => const SizedBox(height: 16);
 }

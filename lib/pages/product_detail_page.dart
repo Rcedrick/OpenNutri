@@ -1,13 +1,86 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../utils/customise_utils.dart';
 
-class ProductDetailPage extends StatelessWidget {
+class ProductDetailPage extends StatefulWidget {
   final Product product;
 
   const ProductDetailPage({super.key, required this.product});
 
   @override
+  State<ProductDetailPage> createState() => _ProductDetailPageState();
+}
+
+class _ProductDetailPageState extends State<ProductDetailPage> {
+  bool _isLiked = false;
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfLiked();
+  }
+
+  Future<void> _checkIfLiked() async {
+    if (uid == null) return;
+
+    final likeRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('like')
+        .doc(widget.product.code);
+
+    final doc = await likeRef.get();
+
+    setState(() {
+      _isLiked = doc.exists;
+    });
+  }
+
+  Future<void> _toggleLike() async {
+    if (uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Vous devez être connecté pour liker un produit.")),
+      );
+      return;
+    }
+
+    final likeRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('like')
+        .doc(widget.product.code);
+
+    final doc = await likeRef.get();
+
+    if (doc.exists) {
+      await likeRef.delete();
+      setState(() {
+        _isLiked = false;
+      });
+      showCustomSnackBar(context, "Produit retiré aux favoris.");
+    } else {
+      await likeRef.set({
+        'name': widget.product.name,
+        'code': widget.product.code,
+        'imageUrl': widget.product.imageUrl,
+        'nutriscore': widget.product.nutriscore,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+      setState(() {
+        _isLiked = true;
+      });
+      showCustomSnackBar(context, "Produit ajouté aux favoris.");
+    }
+  }
+
+
+  @override
   Widget build(BuildContext context) {
+    final product = widget.product;
+
     return DefaultTabController(
       length: 3,
       child: Container(
@@ -24,6 +97,15 @@ class ProductDetailPage extends StatelessWidget {
             title: Text(product.name),
             backgroundColor: Colors.transparent,
             elevation: 0,
+            actions: [
+              IconButton(
+                icon: Icon(
+                  _isLiked ? Icons.favorite : Icons.favorite_border,
+                  color: Colors.purple,
+                ),
+                onPressed: _toggleLike,
+              )
+            ],
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Aperçu'),
@@ -34,9 +116,9 @@ class ProductDetailPage extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              _buildApercuTab(),
-              _buildIngredientsTab(context),
-              _buildNutritionTab(),
+              _buildApercuTab(product),
+              _buildIngredientsTab(product, context),
+              _buildNutritionTab(product),
             ],
           ),
         ),
@@ -44,8 +126,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  /// Onglet Aperçu — Complet
-  Widget _buildApercuTab() {
+  Widget _buildApercuTab(Product product) {
     final double carbs = product.carbohydrates;
     final double protein = product.proteins;
     final double fat = product.fat;
@@ -66,27 +147,21 @@ class ProductDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-
           _buildSectionTitle("Nom commercial"),
           Text(product.name, style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 10),
-
           _buildSectionTitle("Marque(s)"),
           Text(product.brands ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 10),
-
           _buildSectionTitle("Poids / Quantité"),
           Text('${product.quantity} ${product.unity}', style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 10),
-
           _buildSectionTitle("Code-barres"),
           Text(product.code, style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 10),
-
           _buildSectionTitle("Fabricant"),
           Text(product.producer ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
           const SizedBox(height: 20),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -95,9 +170,7 @@ class ProductDetailPage extends StatelessWidget {
               _buildBadge('Eco-Score', (product.ecoscoreGrade ?? 'n/a').toUpperCase()),
             ],
           ),
-
           const SizedBox(height: 20),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -106,14 +179,10 @@ class ProductDetailPage extends StatelessWidget {
               _buildMacroCircle("Fat", fat, Colors.orange, total == 0 ? 0 : (fat / total) * 100),
             ],
           ),
-
           const SizedBox(height: 20),
-
           _buildSectionTitle("Labels"),
           Text(product.labels ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
-
           const SizedBox(height: 10),
-
           ExpansionTile(
             collapsedIconColor: Colors.white,
             iconColor: Colors.white,
@@ -125,9 +194,7 @@ class ProductDetailPage extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 10),
-
           ExpansionTile(
             collapsedIconColor: Colors.white,
             iconColor: Colors.white,
@@ -144,8 +211,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  /// Onglet Ingrédients — Complet
-  Widget _buildIngredientsTab(BuildContext context) {
+  Widget _buildIngredientsTab(Product product, BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -153,7 +219,6 @@ class ProductDetailPage extends StatelessWidget {
         children: [
           _buildSectionTitle("Composition détaillée"),
           const SizedBox(height: 10),
-
           Table(
             border: TableBorder.all(color: Colors.white30),
             columnWidths: const {
@@ -200,7 +265,7 @@ class ProductDetailPage extends StatelessWidget {
                             context: context,
                             builder: (_) => AlertDialog(
                               title: Text(ingredient.text),
-                              content: Text('Plus de détails à venir ici...'),
+                              content: const Text('Plus de détails à venir ici...'),
                               actions: [
                                 TextButton(
                                   child: const Text('Fermer'),
@@ -234,11 +299,9 @@ class ProductDetailPage extends StatelessWidget {
               }).toList(),
             ],
           ),
-
           const SizedBox(height: 20),
           _buildSectionTitle("Présence OGM"),
           Text(product.gmo ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
-
           const SizedBox(height: 20),
           _buildSectionTitle("Traces possibles"),
           Text(product.traces ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
@@ -247,8 +310,7 @@ class ProductDetailPage extends StatelessWidget {
     );
   }
 
-  /// Onglet Nutrition — Complet
-  Widget _buildNutritionTab() {
+  Widget _buildNutritionTab(Product product) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
