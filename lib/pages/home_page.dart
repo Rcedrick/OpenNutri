@@ -1,5 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:open_nutri/pages/product_detail_page.dart';
+import '../models/product.dart';
+import '../services/product_service.dart';
 import '../utils/customise_utils.dart';
+import 'authentification/signin_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,48 +12,99 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildCustomAppBar("Bienvenu"),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildBanner(),
-            const SizedBox(height: 20),
-            _buildSectionTitle("Catégories populaires"),
-            _buildCategories(context),
-            const SizedBox(height: 20),
-            _buildSectionTitle("Produits à découvrir"),
-            _buildFeaturedProducts(context),
-            const SizedBox(height: 20),
-            _buildSectionTitle("Astuces & Actus"),
-            _buildTips(),
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildBanner(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 60), // pour laisser respirer sous le bandeau si besoin
+                  _buildSectionTitle("Actions à faire"),
+                  _buildActions(context),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Produits à découvrir"),
+                  _buildFeaturedProducts(context),
+                  const SizedBox(height: 20),
+                  _buildSectionTitle("Astuces & Actus"),
+                  _buildTips(),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBanner() {
-    return Container(
-      width: double.infinity,
-      height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Colors.purple, Colors.deepPurple],
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Bandeau violet arrondi
+        Container(
+          height: 80,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.deepPurple],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(40),
+            ),
+          ),
         ),
-      ),
-      child: const Center(
-        child: Text(
-          "🌟 Informations nutrition & conseils",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+
+        // Carte blanche centrée
+        Positioned(
+          top: 30,
+          left: 20,
+          right: 20,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ClipOval(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  "Open Nutri",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
+
 
   Widget _buildSectionTitle(String title) {
     return Text(
@@ -58,93 +114,153 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildCategories(BuildContext context) {
-    final categories = [
-      "Snacks",
-      "Boissons",
-      "Bio",
-      "Céréales",
-      "Confiseries",
-      "Surgelés",
-      "Produits laitiers",
-      "Fruits & Légumes",
-      "Sauces & Condiments",
-      "Viandes",
-      "Poissons & Fruits de mer",
-      "Vegan",
-      "Sans gluten",
-      "Produits locaux",
+  Widget _buildActions(BuildContext context) {
+    final actions = [
+      {
+        "label": "Scan",
+        "icon": Icons.qr_code_scanner,
+        "onTap": () {
+
+        },
+      },
+      {
+        "label": "Recherche",
+        "icon": Icons.search,
+        "onTap": () {
+
+        },
+      },
+      {
+        "label": "Favoris",
+        "icon": Icons.favorite,
+        "onTap": () {
+
+        },
+      },
+      {
+        "label": "Historique",
+        "icon": Icons.history,
+        "onTap": () {
+
+        },
+      },
     ];
-    return SizedBox(
-      height: 60,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        itemBuilder: (_, index) {
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: GridView.count(
+        shrinkWrap: true,
+        crossAxisCount: 4, // 2 par ligne, carré
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1, // carré
+        physics: const NeverScrollableScrollPhysics(), // désactive scroll interne
+        children: actions.map((action) {
           return GestureDetector(
+            onTap: action["onTap"] as void Function()?,
             child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              padding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.purple.shade100,
-                borderRadius: BorderRadius.circular(30),
+                color: Colors.deepPurple.shade100,
+                borderRadius: BorderRadius.circular(20), // coins arrondis
               ),
-              child: Center(
-                child: Text(categories[index],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    action["icon"] as IconData,
+                    size: 40,
+                    color: Colors.deepPurple,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    action["label"] as String,
                     style: const TextStyle(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w500)),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
 
+
   Widget _buildFeaturedProducts(BuildContext context) {
-    final products = ["Nutella", "Coca-Cola", "Kinder Bueno"];
-    return Column(
-      children: products.map((product) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 10),
-          child: ListTile(
-            title: Text(product),
-            subtitle: const Text("Clique pour plus d'infos"),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: Text(product),
-                  content: const Text(
-                      "Voici une description plus détaillée de ce produit."),
-                  actions: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Fermer"))
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      }).toList(),
+    return FutureBuilder<List<Product>>(
+      future: ProductService.fetchFeaturedProducts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Erreur : ${snapshot.error}');
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Text('Aucun produit trouvé.');
+        } else {
+          final products = snapshot.data!;
+          return SizedBox(
+            height: 250,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: products.length,
+              itemBuilder: (context, index) {
+                final product = products[index];
+                return GestureDetector(
+                  onTap: () async {
+                    final fullProduct = await ProductService.fetchProductByCode(product.code);
+                    if (fullProduct != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ProductDetailPage(product: fullProduct),
+                        ),
+                      );
+                    } else {
+                      showCustomSnackBar(context, "Impossible de charger le produit");
+                    }
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width / 2,
+                    margin: const EdgeInsets.only(right: 10),
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: product.imageUrl.isNotEmpty
+                                ? Image.network(
+                              product.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                                : const Icon(Icons.image_not_supported),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              product.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        }
+      },
     );
   }
 
+
   Widget _buildTips() {
     final tips = [
-      {
-        "title": " Manger moins de sucre",
-        "content": """
-Réduire sa consommation de sucre est essentiel pour éviter le surpoids, le diabète et les caries dentaires. 
-• Limitez les sodas et boissons sucrées.
-• Préférez des fruits entiers aux jus industriels.
-• Lisez bien l’étiquette : le sucre peut être caché sous des noms comme sirop de glucose, fructose ou saccharose.
-"""
-      },
       {
         "title": " Bien lire les étiquettes",
         "content": """

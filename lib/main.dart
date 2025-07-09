@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:open_nutri/pages/authentification/profile_page.dart';
 import 'package:open_nutri/pages/home_page.dart';
 import 'package:open_nutri/pages/like_page.dart';
 import 'package:open_nutri/pages/scan_page.dart';
+import 'package:open_nutri/pages/user_page.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import 'package:open_nutri/pages/authentification/signin_page.dart';
@@ -35,10 +37,7 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthGate extends StatelessWidget {
-
   const AuthGate({super.key});
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -89,29 +88,37 @@ class _MainNavigationState extends State<MainNavigation> {
 
 
   final List<String> _titles = const [
-    "Open Nutri",
-    "Scan",
+    "Acceuil",
     "Favoris",
+    "Scan",
     "Historique",
+    "Profile",
   ];
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
       HomePage(),
-      ScanPage(),
       LikePage(),
+      ScanPage(),
       HistoryPage(),
+      ProfilePage(),
     ];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_titles[_currentIndex],
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.white,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _titles[_currentIndex],
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -125,16 +132,26 @@ class _MainNavigationState extends State<MainNavigation> {
           ),
         ),
         actions: [
-          TextButton.icon(
-            onPressed: signUserOut,
-            icon: const Icon(Icons.logout, color: Colors.white, size: 20),
-            label: const Text(
-              "Déconnexion",
-              style: TextStyle(color: Colors.white),
-            ),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
-            ),
+          Row(
+            children: [
+              ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png', // Assure-toi que ton chemin est correct
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                "Open Nutri",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 16),
+            ],
           ),
         ],
 
@@ -151,18 +168,23 @@ class _MainNavigationState extends State<MainNavigation> {
             selectedColor: Colors.purple.shade700,
           ),
           SalomonBottomBarItem(
-            icon: const Icon(Icons.qr_code_scanner),
-            title: const Text("Scan"),
-            selectedColor: Colors.purple.shade700,
-          ),
-          SalomonBottomBarItem(
             icon: const Icon(Icons.favorite),
             title: const Text("Favoris"),
             selectedColor: Colors.purple.shade700,
           ),
           SalomonBottomBarItem(
+            icon: const Icon(Icons.qr_code_scanner),
+            title: const Text("Scan"),
+            selectedColor: Colors.purple.shade700,
+          ),
+          SalomonBottomBarItem(
             icon: const Icon(Icons.history),
             title: const Text("Historique"),
+            selectedColor: Colors.purple.shade700,
+          ),
+          SalomonBottomBarItem(
+            icon: const Icon(Icons.person),
+            title: const Text("Profile"),
             selectedColor: Colors.purple.shade700,
           ),
         ],

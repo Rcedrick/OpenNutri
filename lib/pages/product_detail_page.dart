@@ -95,6 +95,10 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             title: Text(product.name),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             backgroundColor: Colors.transparent,
             elevation: 0,
             actions: [
@@ -190,7 +194,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(product.countries ?? 'Non renseigné', style: const TextStyle(color: Colors.white30)),
+                child: Text(product.countries ?? 'Non renseigné', style: const TextStyle(color: Colors.white70)),
               ),
             ],
           ),
@@ -220,7 +224,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           _buildSectionTitle("Composition détaillée"),
           const SizedBox(height: 10),
           Table(
-            border: TableBorder.all(color: Colors.white30),
+            border: TableBorder.all(color: Colors.white),
             columnWidths: const {
               0: FlexColumnWidth(3),
               1: FlexColumnWidth(1),

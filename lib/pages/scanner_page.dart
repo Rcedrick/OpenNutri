@@ -24,14 +24,25 @@ class _ScannerPageState extends State<ScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scanner un code-barres'),
+        title: const Text('Scanner un code-barres'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.purple, Colors.deepPurple],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.cameraswitch),
+            icon: const Icon(Icons.cameraswitch, color: Colors.white),
             onPressed: () => controller.switchCamera(),
           ),
           IconButton(
-            icon: Icon(Icons.flash_on),
+            icon: const Icon(Icons.flash_on,color: Colors.white),
             onPressed: () => controller.toggleTorch(),
           ),
         ],
@@ -40,25 +51,23 @@ class _ScannerPageState extends State<ScannerPage> {
         children: [
           MobileScanner(
             controller: controller,
-            onDetect: (capture) async {
-              if (!_isScanning) return;
+              onDetect: (capture) async {
+                if (!_isScanning) return;
 
-              final List<Barcode> barcodes = capture.barcodes;
-              for (final barcode in barcodes) {
-                final code = barcode.rawValue;
-                if (code != null) {
-                  setState(() => _isScanning = false);
-                  await widget.onScanned(code);
-                  if (mounted) Navigator.pop(context);
-                  break;
+                final barcodes = capture.barcodes;
+                for (final barcode in barcodes) {
+                  final code = barcode.rawValue;
+                  if (code != null) {
+                    setState(() => _isScanning = false);
+                    Navigator.pop(context, code);
+                    break;
+                  }
                 }
               }
-            },
           ),
-
           Center(
             child: CustomPaint(
-              size: Size(300, 300),
+              size: const Size(300, 300),
               painter: ScanFramePainter(),
             ),
           ),
@@ -76,7 +85,7 @@ class ScanFramePainter extends CustomPainter {
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
 
-    final double cornerLength = 30;
+    const double cornerLength = 30;
     final double w = size.width;
     final double h = size.height;
 
