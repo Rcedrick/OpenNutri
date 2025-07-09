@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../controllers/product_controller.dart';
 import '../models/product.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,11 +17,14 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   bool _isLiked = false;
   final uid = FirebaseAuth.instance.currentUser?.uid;
+  final _controller = ProductController();
+
 
   @override
   void initState() {
     super.initState();
     _checkIfLiked();
+    _controller.addToHistory(widget.product);
   }
 
   Future<void> _checkIfLiked() async {

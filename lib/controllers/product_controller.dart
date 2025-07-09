@@ -8,28 +8,9 @@ class ProductController {
 
   Future<Product?> getProductByCode(String code) async {
     final product = await ProductService.fetchProductByCode(code);
-
     if (product != null) {
       _history.insert(0, product);
-
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid != null) {
-        final userHistory = FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .collection('history');
-        final docRef = userHistory.doc(code);
-        final docSnapshot = await docRef.get();
-
-        if (!docSnapshot.exists) {
-          await docRef.set({
-            'code': product.code,
-            'name': product.name,
-            'imageUrl': product.imageUrl,
-            'timestamp': FieldValue.serverTimestamp(),
-          });
-        }
-      }
+      await addToHistory(product);
     }
 
     return product;
@@ -39,10 +20,8 @@ class ProductController {
     return await ProductService.fetchProducts(name);
   }
 
-  /// ➜ 3️⃣ Historique local
   List<Product> get history => _history;
 
-  /// ➜ 4️⃣ Toggle 'like' (J’adore)
   Future<void> toggleLike(Product product) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
@@ -68,7 +47,6 @@ class ProductController {
     }
   }
 
-  /// ➜ 5️⃣ Vérifier si le produit est déjà liké
   Future<bool> isProductLiked(String code) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return false;
@@ -82,4 +60,31 @@ class ProductController {
     final docSnapshot = await likeRef.get();
     return docSnapshot.exists;
   }
+
+  Future<void> addToHistory(Product product) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final userHistory = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('history');
+    final docRef = userHistory.doc(product.code);
+    final docSnapshot = await docRef.get();
+
+    if (docSnapshot.exists) {
+      await docRef.update({
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await docRef.set({
+        'code': product.code,
+        'name': product.name,
+        'imageUrl': product.imageUrl,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    }
+  }
+
+
 }

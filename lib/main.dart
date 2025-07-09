@@ -1,12 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:open_nutri/pages/authentification/profile_page.dart';
+import 'package:open_nutri/pages/profile_page.dart';
 import 'package:open_nutri/pages/home_page.dart';
 import 'package:open_nutri/pages/like_page.dart';
 import 'package:open_nutri/pages/scan_page.dart';
-import 'package:open_nutri/pages/user_page.dart';
+import 'package:open_nutri/pages/splash_page.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import 'package:open_nutri/pages/authentification/signin_page.dart';
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'OpenNutri',
       debugShowCheckedModeBanner: false,
-      home: const AuthGate(),
+      home: const SplashPage(),
     );
   }
 }
@@ -98,7 +97,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _pages = [
-      HomePage(),
+      HomePage(onMenuTap: setCurrentIndex),
       LikePage(),
       ScanPage(),
       HistoryPage(),

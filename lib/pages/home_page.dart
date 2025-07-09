@@ -4,10 +4,10 @@ import 'package:open_nutri/pages/product_detail_page.dart';
 import '../models/product.dart';
 import '../services/product_service.dart';
 import '../utils/customise_utils.dart';
-import 'authentification/signin_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final Function(int) onMenuTap;
+  const HomePage({super.key, required this.onMenuTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 60), // pour laisser respirer sous le bandeau si besoin
+                  const SizedBox(height: 60),
                   _buildSectionTitle("Actions à faire"),
                   _buildActions(context),
                   const SizedBox(height: 20),
@@ -44,7 +44,6 @@ class HomePage extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Bandeau violet arrondi
         Container(
           height: 80,
           decoration: const BoxDecoration(
@@ -59,7 +58,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
 
-        // Carte blanche centrée
         Positioned(
           top: 30,
           left: 20,
@@ -120,28 +118,28 @@ class HomePage extends StatelessWidget {
         "label": "Scan",
         "icon": Icons.qr_code_scanner,
         "onTap": () {
-
+          onMenuTap(2);
         },
       },
       {
         "label": "Recherche",
         "icon": Icons.search,
         "onTap": () {
-
+          onMenuTap(2);
         },
       },
       {
         "label": "Favoris",
         "icon": Icons.favorite,
         "onTap": () {
-
+          onMenuTap(1);
         },
       },
       {
         "label": "Historique",
         "icon": Icons.history,
         "onTap": () {
-
+          onMenuTap(3);
         },
       },
     ];
@@ -150,18 +148,18 @@ class HomePage extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: GridView.count(
         shrinkWrap: true,
-        crossAxisCount: 4, // 2 par ligne, carré
+        crossAxisCount: 4,
         mainAxisSpacing: 16,
         crossAxisSpacing: 16,
-        childAspectRatio: 1, // carré
-        physics: const NeverScrollableScrollPhysics(), // désactive scroll interne
+        childAspectRatio: 1,
+        physics: const NeverScrollableScrollPhysics(),
         children: actions.map((action) {
           return GestureDetector(
             onTap: action["onTap"] as void Function()?,
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.deepPurple.shade100,
-                borderRadius: BorderRadius.circular(20), // coins arrondis
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

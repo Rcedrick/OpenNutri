@@ -23,20 +23,17 @@ class _ScanPageState extends State<ScanPage> {
   void _openScanner() async {
     var status = await Permission.camera.request();
     if (status.isGranted) {
-      // On lance la page ScannerPage qui va renvoyer un String (code) quand on pop
       final scannedCode = await Navigator.push<String>(
         context,
         MaterialPageRoute(
           builder: (_) => ScannerPage(
             onScanned: (code) async {
-              // Ici, on NE fait PAS de Navigator.pop, c'est ScannerPage qui ferme la page
               return;
             },
           ),
         ),
       );
 
-      // Une fois la page scanner fermée, on récupère le code scanné
       if (scannedCode != null && scannedCode.isNotEmpty) {
         showLoading(context, message: "Chargement du produit...");
         final result = await _controller.getProductByCode(scannedCode);
@@ -83,7 +80,6 @@ class _ScanPageState extends State<ScanPage> {
       body: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Bandeau violet
           Container(
             height: 80,
             decoration: const BoxDecoration(
@@ -98,7 +94,6 @@ class _ScanPageState extends State<ScanPage> {
             ),
           ),
 
-          // Carte titre centrée
           Positioned(
             top: 30,
             left: 16,
@@ -129,7 +124,6 @@ class _ScanPageState extends State<ScanPage> {
             ),
           ),
 
-          // Contenu principal sous la carte
           Padding(
             padding: const EdgeInsets.only(top: 140, left: 16, right: 16),
             child: Column(
